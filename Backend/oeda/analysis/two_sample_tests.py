@@ -2,7 +2,7 @@ from math import sqrt, floor
 from numpy import var
 from scipy.stats import ttest_ind
 from statsmodels.stats.power import tt_ind_solve_power
-from rtxlib import warn, error
+from oeda.log import warn, error
 from oeda.analysis import Analysis
 from numpy import mean
 
