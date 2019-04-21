@@ -36,6 +36,18 @@ bash ./req_installer.sh
 ```
 bash ./setup_servers.sh
 cd ~/OEDA/Frontend/
+```
+* Run python server
+```
+cd ~/OEDA/Backend/
+python server.py
+```
+In another terminal, navigate to tests/http-test-server and run `node app.js`. Make sure `localhost:3003` is not being used beforehand
+
+
+* Run Angular server
+```
+cd ~/OEDA/Frontend/
 bash ./serve.sh
 ```
 
