@@ -23,20 +23,20 @@ Please check the [separate page](https://github.com/alinaciuysal/OEDA/wiki/Apply
 ### New Installation instruction
 * install git
 ```
-`sudo apt-get install git`
+sudo apt-get install git
 ```
 * clone this repo
 ```
-`cd ~`
-`git clone https://github.com/iliasger/OEDA.git`
-`cd OEDA`
-`bash ./req_installer.sh`
+cd ~
+git clone https://github.com/iliasger/OEDA.git
+cd OEDA
+bash ./req_installer.sh
 ```
 * setup flask, express, angular
 ```
-`bash ./setup_servers.sh`
-`cd ~/OEDA/Frontend/`
-`bash ./serve.sh`
+bash ./setup_servers.sh
+cd ~/OEDA/Frontend/
+bash ./serve.sh
 ```
 
 #### [Instructions to use](https://github.com/alinaciuysal/OEDA/wiki/Instructions-to-use)
