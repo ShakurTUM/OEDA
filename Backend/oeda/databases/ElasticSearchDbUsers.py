@@ -48,7 +48,7 @@ class ElasticSearchDbUsers(UserDatabase):
                 "match_all": {}
             }
         }
-        res = self.es.search(index=self.index, doc_type=self.user_type_name, body=query)
+        res = self.es.search(index=self.index, body=query)
         return [r["_source"] for r in res["hits"]["hits"]]
 
     def get_user(self, username):
@@ -61,12 +61,12 @@ class ElasticSearchDbUsers(UserDatabase):
             }
         }
 
-        res = self.es.search(index=self.index, doc_type=self.user_type_name, body=query)
+        res = self.es.search(index=self.index, body=query)
         return [r["_id"] for r in res["hits"]["hits"]], [r["_source"] for r in res["hits"]["hits"]]
 
     def save_user(self, user):
         try:
-            self.es.index(index=self.index, doc_type=self.user_type_name, body=user)
+            self.es.index(index=self.index, body=user)
         except ConnectionError:
             error("Error while saving user in elasticsearch. Check connection to elasticsearch.")
 
@@ -74,6 +74,6 @@ class ElasticSearchDbUsers(UserDatabase):
         user_id, retrieved_user = self.get_user(user['name'])
         body = {"doc": {"name": user['name'], "db_configuration": user['db_configuration']}}
         try:
-            self.es.update(index=self.index, doc_type=self.user_type_name, id=user_id, body=body)
+            self.es.update(index=self.index, id=user_id, body=body)
         except ConnectionError:
             error("Error while updating experiment's status in elasticsearch. Check connection to elasticsearch.")

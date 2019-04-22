@@ -14,7 +14,7 @@ setup(
         'tornado', # Apache license
         'flask_restful', # BSD License (BSD)
         'flask_cors', # MIT License (MIT)
-        'elasticsearch>=6.0.0,<7.0.0', # Apache Software License (Apache License, Version 2.0)
+        'elasticsearch', # Apache Software License (Apache License, Version 2.0)
         'statsmodels', # statistics and statistical testing, BSD License (BSD License)
         'numpy>=1.14.2', # scientific computing, OSI Approved (BSD)
         'requests', # http integreation, Apache Software License (Apache 2.0)
