@@ -6,5 +6,6 @@ python setup.py install
 
 
 cd ../Frontend
-npm install -g @angular/cli@1.7.3
-npm install
+sudo npm cache clean --force
+sudo npm install -g @angular/cli@1.7.3
+sudo npm install --no-optional

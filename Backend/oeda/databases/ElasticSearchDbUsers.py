@@ -55,7 +55,7 @@ class ElasticSearchDbUsers(UserDatabase):
         query = {
             "size": 1000,
             "query": {
-                "term": {
+                "match": {
                     "name": username
                 }
             }
