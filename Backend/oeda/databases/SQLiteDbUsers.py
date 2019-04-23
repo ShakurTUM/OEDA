@@ -5,9 +5,9 @@ import sqlite3
 
 class SQLiteDbUsers(UserDatabase):
 
-    def __init__(self, host, port, db_config):
+    def __init__(self, dbfile='OEDA.sqlite'):
 
-        self.db = 'OEDA.sqlite'
+        self.db = dbfile
         self.table = 'users'
         try:
             self.conn = sqlite3.connect(self.db)
