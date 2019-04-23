@@ -3,6 +3,7 @@ import os
 from json import load
 from ElasticSearchDb import ElasticSearchDb
 from ElasticSearchDbUsers import ElasticSearchDbUsers
+from SQLiteDbUsers import SQLiteDbUsers
 from elasticsearch.exceptions import ConnectionError
 from oeda.log import error
 
@@ -18,6 +19,8 @@ def create_db_instance_for_users(type, host, port, config):
     """ creates a single instance of a user database  """
     if type == "elasticsearch":
         return ElasticSearchDbUsers(host, port, config)
+    elif type == "sqlite":
+        return SQLiteDbUsers()
 
 
 class UserDatabase:
