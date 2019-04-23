@@ -54,7 +54,8 @@ class SQLiteDbUsers(UserDatabase):
                 sql = 'select * from ' + self.table + ' where name = ?'
                 cursor.execute(sql, username)
                 rows = cursor.fetchall()
-                users.append([rows[0])
+                users.append(rows[0])
+                
         except:
             error("Fetching single user failed")
         
