@@ -35,7 +35,6 @@ bash ./req_installer.sh
 * setup flask, express, angular
 ```
 bash ./setup_servers.sh
-cd ~/OEDA/Frontend/
 ```
 * Run python server
 ```
