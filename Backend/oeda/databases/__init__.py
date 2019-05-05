@@ -15,12 +15,18 @@ def create_db_instance_for_experiments(type, host, port, config):
         return ElasticSearchDb(host, port, config)
 
 
-def create_db_instance_for_users(type, host, port, config):
+def create_db_instance_for_users(config):
+    # config['db_type'], config['host'], config['port']
+    type = config['db_type']
     """ creates a single instance of a user database  """
     if type == "elasticsearch":
+        host = config['host']
+        port = config['port']
         return ElasticSearchDbUsers(host, port, config)
     elif type == "sqlite":
         return SQLiteDbUsers()
+    else:
+        raise KeyError
 
 
 class UserDatabase:
@@ -40,7 +46,7 @@ def setup_user_database():
     with open(file_path) as json_data_file:
         try:
             config_data = load(json_data_file)
-            user_db = create_db_instance_for_users(config_data['db_type'], config_data['host'], config_data['port'], config_data)
+            user_db = create_db_instance_for_users(config_data)
             UserDatabase.db = user_db
         except ValueError:
             error("> You need to specify the user database configuration in databases/user_db_config.json")
