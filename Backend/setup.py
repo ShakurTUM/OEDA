@@ -35,7 +35,7 @@ setup(
         'statsmodels', # statistics and statistical testing, BSD License (BSD License)
         'scikit-optimize>=0.5.2', # gauss optimizer, BSD
         'pandas', # Powerful data structures for data analysis, time series, and statistics, BSD
-        'scipy' # Scientific Library for Python, BSD License (BSD)
+        'scipy', # Scientific Library for Python, BSD License (BSD)
 
         # Font
         'freetype-py', # bindings for the FreeType library, GNU General Public License (GPL)
