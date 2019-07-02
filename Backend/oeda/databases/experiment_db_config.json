@@ -21,7 +21,7 @@
                 "stages_count":           { "type": "integer" }
               }
             },
-            "createdDate":                { "type": "date", "format": "yyyy-MM-dd HH||yyyy-MM-dd HH:mm||yyyy-MM-dd HH:mm:ss||yyyy-MM-dd HH:mm:ss.SSSSSS"},
+            "createdDate":                { "type": "date", "format": "yyyy-MM-dd HH:mm:ss.SSSSSS"},
             "targetSystemId":             { "type": "keyword"  },
             "numberOfSteps":              { "type": "integer"  }
           }
@@ -38,7 +38,7 @@
             "step_name":                  { "type": "text"     },
             "number":                     { "type": "text"     },
             "knobs":                      { "type": "object"   },
-            "createdDate":                { "type": "date", "format": "yyyy-MM-dd HH||yyyy-MM-dd HH:mm||yyyy-MM-dd HH:mm:ss||yyyy-MM-dd HH:mm:ss.SSSSSS"},
+            "createdDate":                { "type": "date", "format": "yyyy-MM-dd HH:mm:ss.SSSSSS"},
             "stage_result":               { "type": "float" }
           }
         
@@ -64,7 +64,7 @@
             "knobs":                            { "type": "nested"  },
             "data_type":                        { "type": "object" },
             "eligible_for_next_step":           { "type": "boolean" },
-            "createdDate":                      { "type": "date", "format": "yyyy-MM-dd HH||yyyy-MM-dd HH:mm||yyyy-MM-dd HH:mm:ss||yyyy-MM-dd HH:mm:ss.SSSSSS"}
+            "createdDate":                      { "type": "date", "format": "yyyy-MM-dd HH:mm:ss.SSSSSS"}
           }
         
       }
@@ -77,7 +77,7 @@
           "properties": {
             "stage_id": { "type": "keyword"},
             "payload":  { "type": "object"  },
-            "createdDate":  { "type": "date", "format": "yyyy-MM-dd HH||yyyy-MM-dd HH:mm||yyyy-MM-dd HH:mm:ss||yyyy-MM-dd HH:mm:ss.SSSSSS"}
+            "createdDate":  { "type": "date", "format": "yyyy-MM-dd HH:mm:ss.SSSSSS"}
           }
         
       }
@@ -110,7 +110,7 @@
             "name":                                 { "type": "keyword"  },
             "description":                          { "type": "text"     },
             "status":                               { "type": "keyword"  },
-            "createdDate":                          { "type": "date", "format": "yyyy-MM-dd HH||yyyy-MM-dd HH:mm||yyyy-MM-dd HH:mm:ss||yyyy-MM-dd HH:mm:ss.SSSSSS"}
+            "createdDate":                          { "type": "date", "format": "yyyy-MM-dd HH:mm:ss.SSSSSS"}
           }
         
       }
