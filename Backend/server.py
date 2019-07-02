@@ -10,7 +10,7 @@ from oeda.controller.experiment_results import StageResultsWithExperimentIdContr
 from oeda.controller.running_experiment_results import RunningAllStageResultsWithExperimentIdController, OEDACallbackController
 from oeda.controller.stages import StageController
 from oeda.controller.plotting import QQPlotController, BoxPlotController
-from oeda.controller.users import UserRegisterController, UserListController, UserController, UserLoginController
+from oeda.controller.users import UserRegisterController, UserListController, UserController, UserLoginController, UserGroupController, UserGroupListController, UserGroupRegisterController
 from oeda.controller.execution_scheduler import ExecutionSchedulerController
 from oeda.controller.deletedb import DeleteDBController
 from oeda.controller.analysis import AnalysisController
@@ -75,6 +75,12 @@ api.add_resource(UserRegisterController, '/api/auth/register')
 
 api.add_resource(UserListController, '/api/users')
 api.add_resource(UserController, '/api/user/<string:username>')
+
+# newly added group functionalities by rakib
+api.add_resource(UserGroupListController, '/api/usergroups')
+api.add_resource(UserGroupRegisterController, '/api/usergroup/register')
+api.add_resource(UserGroupController, '/api/usergroup/<string:group_name>')
+
 
 api.add_resource(ExperimentsListController, '/api/experiments')
 api.add_resource(ExperimentController, '/api/experiments/<string:experiment_id>')

@@ -24,7 +24,8 @@ def create_db_instance_for_users(config):
         port = config['port']
         return ElasticSearchDbUsers(host, port, config)
     elif type == "sqlite":
-        return SQLiteDbUsers()
+        print(config)
+        return SQLiteDbUsers(config['sqlite_file'])
     else:
         raise KeyError
 

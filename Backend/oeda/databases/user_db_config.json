@@ -1,3 +1,4 @@
 {
-  "db_type": "sqlite"
+  "db_type": "sqlite",
+  "sqlite_file": "/home/rakib/OEDA/OEDA.sqlite_test"
 }
