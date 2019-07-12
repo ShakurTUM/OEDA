@@ -173,3 +173,4 @@ venv.bak/
 .Rproj.user
 
 Backend/oeda/databases/user_db_config.json
+Backend/oeda/databases/experiment_db_config.json
