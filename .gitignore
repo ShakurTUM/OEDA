@@ -171,3 +171,5 @@ venv.bak/
 # mypy
 .mypy_cache/
 .Rproj.user
+
+Backend/oeda/databases/user_db_config.json
