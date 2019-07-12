@@ -65,7 +65,7 @@ class QQPlotController(Resource):
             fig1.savefig(buf1, format='png')
             buf1.seek(0)
 
-            figure_data_png = base64.b64encode(buf1.getvalue())
+            figure_data_png = base64.b64encode(buf1.getvalue()).decode('ascii')
             buf1.close()
             fig1.clf()
             del fig1
@@ -171,7 +171,7 @@ def draw_box_plot(incoming_data_type_name, x_values, y_values):
     plt.savefig(buf1, bbox_inches='tight', format='png')
     buf1.seek(0)
 
-    figure_data_png = base64.b64encode(buf1.getvalue())
+    figure_data_png = base64.b64encode(buf1.getvalue()).decode('ascii')
     buf1.close()
     fig.clf()
     del fig

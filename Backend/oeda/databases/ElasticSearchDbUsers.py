@@ -3,7 +3,7 @@ from elasticsearch.exceptions import ConnectionError
 from elasticsearch import Elasticsearch
 from elasticsearch.client import IndicesClient
 from elasticsearch.exceptions import TransportError
-from UserDatabase import UserDatabase
+from .UserDatabase import UserDatabase
 from oeda.log import *
 
 

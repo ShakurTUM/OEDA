@@ -247,7 +247,7 @@ def get_significant_interactions(anova_result, alpha, nrOfParameters):
         # Residual will be filtered here because of None check
         if 'PR(>F)' in res:
             pvalue = res['PR(>F)']
-            if pvalue < alpha and pvalue is not None:
+            if pvalue is not None and pvalue < alpha:
                 significant_interactions.append((interaction_key, res, pvalue))
 
     # sort w.r.t pvalue and also pass other values to caller fcn
@@ -288,7 +288,7 @@ def assign_iterations(experiment, significant_interactions, execution_strategy_t
     # keys = ['route_random_sigma', 'exploration_percentage', 'route_random_sigma, exploration_percentage']
     info("> values " + str(values))
     for i in range(len(values)):
-        key = significant_interactions.keys()[i]
+        key = list(significant_interactions.keys())[i]
         # TODO: set UI so that smaller value cannot be retrieved,
 
         # if you have more values in keys, then you need to set opt_iter_in_design accordingly

@@ -1,6 +1,6 @@
 from flask import request, jsonify
 from flask_restful import Resource
-from oeda.databases import user_db, setup_experiment_database, db
+from oeda.databases import user_db, setup_experiment_database, experiments_db
 import json, traceback, jwt, requests
 from werkzeug.security import generate_password_hash, check_password_hash
 from elasticsearch.exceptions import ConnectionError
@@ -233,7 +233,7 @@ class UserLoginController(Resource):
                         if 'host' in user_info_without_id['db_configuration'] and 'port' in user_info_without_id['db_configuration'] and 'type' in user_info_without_id['db_configuration']:
                             # if user is logged-in, and configured experiments database previously:
                             # initialize experiment database and start execution scheduler if they are not done before
-                            if db() is None:
+                            if experiments_db() is None:
                                 setup_experiment_database(str(user_info_without_id['db_configuration']['type']), str(
                                     user_info_without_id['db_configuration']['host']), str(user_info_without_id['db_configuration']['port']))
                             if get_execution_scheduler_timer() is None:
@@ -245,13 +245,13 @@ class UserLoginController(Resource):
                             user_info_without_id['db_configuration']['host'] = "localhost"
                             user_info_without_id['db_configuration']['port'] = 9200
 
-                            if db() is None:
+                            if experiments_db() is None:
                                 setup_experiment_database(str(user_info_without_id['db_configuration']['type']), str(
                                 user_info_without_id['db_configuration']['host']), str(user_info_without_id['db_configuration']['port']))
                             if get_execution_scheduler_timer() is None:
                                 initialize_execution_scheduler(10)
                         # return the usual jwt token
-                        return {"token": encoded_jwt}, 200
+                        return {"token": str(encoded_jwt)}, 200
                     else:
                         return {"message": "Provided credentials are not correct"}, 403
                 else:
@@ -270,7 +270,7 @@ class UserLoginController(Resource):
                         if 'host' in user_info_without_id['db_configuration'] and 'port' in user_info_without_id['db_configuration'] and 'type' in user_info_without_id['db_configuration']:
                             # if user is logged-in, and configured experiments database previously:
                             # initialize experiment database and start execution scheduler if they are not done before
-                            if db() is None:
+                            if experiments_db() is None:
                                 setup_experiment_database(str(user_info_without_id['db_configuration']['type']), str(user_info_without_id['db_configuration']['host']), str(user_info_without_id['db_configuration']['port']))
                             if get_execution_scheduler_timer() is None:
                                 initialize_execution_scheduler(10)

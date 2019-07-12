@@ -11,7 +11,6 @@
       "name": "experiment",
       "index_name": "oeda_experiment",
       "mappings": {
-        "experiment": {
           "properties": {
             "executionStrategy": {
               "type": "nested",
@@ -22,35 +21,34 @@
                 "stages_count":           { "type": "integer" }
               }
             },
-            "createdDate":                { "type": "date", "format": "yyyy-MM-dd HH||yyyy-MM-dd HH:mm||yyyy-MM-dd HH:mm:ss||yyyy-MM-dd HH:mm:ss.SSSSSS"},
+            "createdDate":                { "type": "date", "format": "yyyy-MM-dd HH:mm:ss.SSSSSS"},
             "targetSystemId":             { "type": "keyword"  },
             "numberOfSteps":              { "type": "integer"  }
           }
-        }
       }
     },
     "stage": {
       "name": "stage",
       "index_name": "oeda_stage",
       "mappings": {
-        "stage": {
+
           "properties":     {
             "experiment_id":              { "type": "keyword"  },
             "step_no":                    { "type": "keyword"  },
             "step_name":                  { "type": "text"     },
             "number":                     { "type": "text"     },
             "knobs":                      { "type": "object"   },
-            "createdDate":                { "type": "date", "format": "yyyy-MM-dd HH||yyyy-MM-dd HH:mm||yyyy-MM-dd HH:mm:ss||yyyy-MM-dd HH:mm:ss.SSSSSS"},
+            "createdDate":                { "type": "date", "format": "yyyy-MM-dd HH:mm:ss.SSSSSS"},
             "stage_result":               { "type": "float" }
           }
-        }
+
       }
     },
     "analysis": {
       "name": "analysis",
       "index_name": "oeda_analysis",
       "mappings": {
-        "analysis": {
+
           "properties": {
             "experiment_id":                    { "type": "keyword" },
             "step_no":                          { "type": "keyword" },
@@ -66,29 +64,29 @@
             "knobs":                            { "type": "nested"  },
             "data_type":                        { "type": "object" },
             "eligible_for_next_step":           { "type": "boolean" },
-            "createdDate":                      { "type": "date", "format": "yyyy-MM-dd HH||yyyy-MM-dd HH:mm||yyyy-MM-dd HH:mm:ss||yyyy-MM-dd HH:mm:ss.SSSSSS"}
+            "createdDate":                      { "type": "date", "format": "yyyy-MM-dd HH:mm:ss.SSSSSS"}
           }
-        }
+
       }
     },
     "data_point": {
       "name": "data_point",
       "index_name": "oeda_data_point",
       "mappings": {
-        "data_point": {
+
           "properties": {
             "stage_id": { "type": "keyword"},
             "payload":  { "type": "object"  },
-            "createdDate":  { "type": "date", "format": "yyyy-MM-dd HH||yyyy-MM-dd HH:mm||yyyy-MM-dd HH:mm:ss||yyyy-MM-dd HH:mm:ss.SSSSSS"}
+            "createdDate":  { "type": "date", "format": "yyyy-MM-dd HH:mm:ss.SSSSSS"}
           }
-        }
+
       }
     },
     "target_system": {
       "name": "target_system",
       "index_name": "oeda_target_system",
       "mappings": {
-        "target_system": {
+
           "properties": {
             "primary_data_provider": {
               "type": "nested",
@@ -112,9 +110,9 @@
             "name":                                 { "type": "keyword"  },
             "description":                          { "type": "text"     },
             "status":                               { "type": "keyword"  },
-            "createdDate":                          { "type": "date", "format": "yyyy-MM-dd HH||yyyy-MM-dd HH:mm||yyyy-MM-dd HH:mm:ss||yyyy-MM-dd HH:mm:ss.SSSSSS"}
+            "createdDate":                          { "type": "date", "format": "yyyy-MM-dd HH:mm:ss.SSSSSS"}
           }
-        }
+
       }
     }
   }

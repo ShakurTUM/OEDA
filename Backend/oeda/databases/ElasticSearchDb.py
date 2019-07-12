@@ -8,7 +8,7 @@ from elasticsearch import Elasticsearch
 from elasticsearch.client import IndicesClient
 from elasticsearch.helpers import scan
 
-from Database import Database
+from .Database import Database
 from oeda.log import *
 
 
@@ -370,7 +370,7 @@ class ElasticSearchDb(Database):
                 "range": {
                     "createdDate": {
                         "gt": timestamp,
-                        "format": "yyyy-MM-dd HH||yyyy-MM-dd HH:mm||yyyy-MM-dd HH:mm:ss||yyyy-MM-dd HH:mm:ss.SSSSSS"
+                        "format": "yyyy-MM-dd HH:mm:ss.SSSSSS"
                     }
                 }
             }

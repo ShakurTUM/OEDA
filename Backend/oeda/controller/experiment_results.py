@@ -39,7 +39,7 @@ def get_all_stage_data(experiment_id, timestamp=None):
     steps_and_stages = sc.StageController.get(experiment_id=experiment_id)
     new_tuples = dict()
     # we get step_no as keys, stage_numbers as inner keys
-    for step_no, step in steps_and_stages.iteritems():
+    for step_no, step in steps_and_stages.items():
         new_tuples[step_no] = dict()
         for stage in step:
             if stage['number'] != "best":

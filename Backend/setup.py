@@ -46,7 +46,7 @@ setup(
         'seaborn', # statistical data visualization, BSD License (BSD (3-clause))
         
         # data streaming
-        'kafka', # Pure Python client for Apache Kafka, Apache Software License (Apache License 2.0)
+        'kafka-python', # Pure Python client for Apache Kafka, Apache Software License (Apache License 2.0)
         'paho-mqtt', # MQTT version 3.1.1 client class, OSI Approved (Eclipse Public License v1.0 / Eclipse Distribution License v1.0)
     ]
 )

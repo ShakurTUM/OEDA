@@ -3,7 +3,7 @@ from threading import Timer
 from oeda.service.threadpool import getCachedThreadPool
 from oeda.rtxlib.workflow import execute_workflow
 from oeda.service.rtx_definition import *
-from oeda.databases import db
+from oeda.databases import db, experiments_db
 import traceback
 from oeda.controller.callback import set_dict as set_dict
 
@@ -11,14 +11,15 @@ execution_scheduler_timer = None
 
 
 def find_open_experiments():
-    ids, experiments = db().get_experiments()
+    if not experiments_db():
+        return []
+    ids, experiments = experiments_db().get_experiments()
     new_experiments = experiments
     i = 0
     for _ in experiments:
         new_experiments[i]["id"] = ids[i]
         i += 1
-
-    return filter(lambda x: x["status"] == "OPEN", new_experiments)
+    return [e for e in new_experiments if e["status"] == "OPEN"]
 
 
 def set_experiment_status(experiment_id, status):
@@ -39,20 +40,6 @@ def initialize_execution_scheduler(period):
     global execution_scheduler_timer
     execution_scheduler_timer = Timer(period, search_for_open_experiments, [period]).start()
 
-
-def search_for_open_experiments(period):
-    # put everything in a try, as this function needs to re-schedule the next timer
-    try:
-        debug("Searching for OPEN experiments")
-        open_experiments = find_open_experiments()
-        # go through all open experiments and fork_n_run them on RTX
-        map(fork_and_run_experiment, open_experiments)
-    except Exception as e:
-        print(e)
-    # re-schedule the task
-    Timer(period, search_for_open_experiments, [period]).start()
-
-
 def fork_and_run_experiment(experiment):
     info("###################")
     info("Found new experiment to run: " + experiment["name"])
@@ -70,6 +57,19 @@ def fork_and_run_experiment(experiment):
 
         # example of killing experiment after 10 secs TODO remove this line after testing!
         # Timer(10, kill_experiment, [experiment["id"]]).start()
+
+def search_for_open_experiments(period):
+    # put everything in a try, as this function needs to re-schedule the next timer
+    try:
+        debug("Searching for OPEN experiments")
+        open_experiments = find_open_experiments()
+        # go through all open experiments and fork_n_run them on RTX
+        for e in open_experiments:
+            fork_and_run_experiment(e)
+    except Exception as e:
+        print(e)
+    # re-schedule the task
+    Timer(period, search_for_open_experiments, [period]).start()
 
 
 def kill_experiment(experiment_id):
@@ -106,7 +106,7 @@ def rtx_execution(experiment, target_system, oeda_stop_request):
 
     except Exception as e:
         tb = traceback.format_exc()
-        print tb
+        print(tb)
         error("Experiment FAILED - reason: " + str(tb))
         error("Experiment FAILED - " + experiment["id"] + " - " + str(e))
         set_experiment_status(experiment["id"], "ERROR")

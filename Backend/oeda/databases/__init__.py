@@ -1,9 +1,9 @@
 import os
 
 from json import load
-from ElasticSearchDb import ElasticSearchDb
-from ElasticSearchDbUsers import ElasticSearchDbUsers
-from SQLiteDbUsers import SQLiteDbUsers
+from .ElasticSearchDb import ElasticSearchDb
+from .ElasticSearchDbUsers import ElasticSearchDbUsers
+from .SQLiteDbUsers import SQLiteDbUsers
 from elasticsearch.exceptions import ConnectionError
 from oeda.log import error
 
@@ -44,18 +44,21 @@ def setup_user_database():
     current_directory = os.path.dirname(__file__)
     parent_directory = os.path.split(current_directory)[0]
     file_path = os.path.join(parent_directory, 'databases', 'user_db_config.json')
-    with open(file_path) as json_data_file:
-        try:
-            config_data = load(json_data_file)
-            user_db = create_db_instance_for_users(config_data)
-            UserDatabase.db = user_db
-        except ValueError:
-            error("> You need to specify the user database configuration in databases/user_db_config.json")
-            exit(0)
-        except KeyError:
-            error("> You need to specify 'db_type', 'host', 'port' values in databases/user_db_config.json properly")
-            exit(0)
-
+    try:
+        with open(file_path) as json_data_file:
+            try:
+                config_data = load(json_data_file)
+                user_db = create_db_instance_for_users(config_data)
+                UserDatabase.db = user_db
+            except ValueError:
+                error("> You need to specify the user database configuration in databases/user_db_config.json")
+                exit(0)
+            except KeyError:
+                error("> You need to specify 'db_type', 'host', 'port' values in databases/user_db_config.json properly")
+                exit(0)
+    except:
+        error("> You need to specify a 'user_db_config.json' file in the databases folder. You can copy the templates in that folder!")
+        exit(0)
 
 # sets up the actual experiment database / or test database with user-provided values (type, host, port)
 # it uses mappings in the experiment_db_config.json
@@ -101,3 +104,7 @@ def test_db():
         error("You can configure experiment database for tests by calling for_tests=True flag in setup_experiment_database")
         return None
     return TestDatabase.db
+
+
+def experiments_db():
+    return ExperimentDatabase.db

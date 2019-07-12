@@ -11,10 +11,10 @@
   },
   "user_type": {
     "name": "user",
-    "mappings": {
+    "mapping": {
       "properties": {
         "name":              { "type": "keyword", "index": "not_analyzed" },
-        "password":          { "type": "text" , "index": "not_analyzed"   },
+        "password":          { "type": "text",    "index": "not_analyzed"    },
         "db_configuration":  { "type": "object"  }
       }
     }

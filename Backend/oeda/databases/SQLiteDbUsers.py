@@ -1,5 +1,5 @@
 import traceback
-from UserDatabase import UserDatabase
+from .UserDatabase import UserDatabase
 from oeda.log import *
 import sqlite3
 import json
@@ -81,17 +81,17 @@ class SQLiteDbUsers(UserDatabase):
                 cursor.execute(sql)
                 for row in cursor:
                     user = {}
-                    user['name'] = row['u.name']
-                    user['id'] = row['u.id']
-                    user['password'] = row['u.password']
-                    user['db_configuration'] = row['u.db_configuration']
-                    user['created_at'] = row['u.created_at']
-                    user['group_id'] = row['u.group_id']
-                    user['group_name'] = row['ug.group_name']
+                    user['name'] = row['name']
+                    user['id'] = row['id']
+                    user['password'] = row['password']
+                    user['db_configuration'] = row['db_configuration']
+                    user['created_at'] = row['created_at']
+                    user['group_id'] = row['group_id']
+                    user['group_name'] = row['group_name']
 
                 # row = cursor.fetchone()
                     users.append(user)
-            
+
                 # for row in rows:
                 #     users.append(row)
         except:

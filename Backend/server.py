@@ -113,18 +113,23 @@ if __name__ == '__main__':
     from tornado.log import enable_pretty_logging
     from flask_cors import CORS
     from oeda.databases import setup_user_database
-    import sys
-    reload(sys)  # Reload does the trick! #see:https://github.com/flask-restful/flask-restful/issues/552
-    sys.setdefaultencoding('UTF8')
+
+    # This hack is NOT NEEDED anymore in Python 3:
+    # import sys
+    # importlib.reload(sys)  # Reload does the trick! #see:https://github.com/flask-restful/flask-restful/issues/552
+    # sys.setdefaultencoding('UTF8')
+
     app.logger.setLevel(logging.WARNING)
     cors = CORS(app, resources={r"/api/*": {"origins": "*"}})
     http_server = HTTPServer(WSGIContainer(app))
     http_server.listen(5000)
     enable_pretty_logging()
     setup_user_database()
+
     # this is just for easy debugging, o/w user needs to logout & login to the system every time server gets restarted
-    from oeda.databases import setup_experiment_database
-    setup_experiment_database("elasticsearch", "localhost", "9200")
+    # from oeda.databases import setup_experiment_database
+    # setup_experiment_database("elasticsearch", "localhost", "9200")
+
     from oeda.service.execution_scheduler import initialize_execution_scheduler
-    initialize_execution_scheduler(120)
+    initialize_execution_scheduler(10)
     IOLoop.instance().start()
