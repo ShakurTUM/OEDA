@@ -165,7 +165,7 @@ class SQLiteDbUsers(UserDatabase):
             print(e)
             error("Fetching single user failed")
         
-        return users
+        return users if len(users) > 0 else None
 
     def save_user(self, user):
         

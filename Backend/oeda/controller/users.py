@@ -74,7 +74,10 @@ class UserController(Resource):
             print(content)
             # if type, host, and port are provided, setup experiment database and update user
             if 'host' in content['db_configuration'] and 'port' in content['db_configuration'] and 'type' in content['db_configuration']:
-                setup_experiment_database(str(content['db_configuration']['type']), str(content['db_configuration']['host']), str(content['db_configuration']['port']))
+                try:
+                    setup_experiment_database(str(content['db_configuration']['type']), str(content['db_configuration']['host']), str(content['db_configuration']['port']))
+                except:
+                    return {"message": "Experiments database configuration needs to be set before proceeding"}, 500
                 user_db().update_user(content)
                 # start execution scheduler using updated config
                 initialize_execution_scheduler(10)
@@ -221,10 +224,10 @@ class UserLoginController(Resource):
             password = content["password"]
 
             if len(username) != 0 and len(password) != 0:
-                single_user = user_db().get_user(username)
-                print(single_user)
-                user_info_without_id = single_user[0]
-                if len(user_info_without_id) is not 0:
+                users = user_db().get_user(username)
+                if users is not None:
+                    user_info_without_id = users[0]
+                    print(user_info_without_id)
                     if check_password_hash(user_info_without_id['password'], password):
                         del user_info_without_id['password']
                         encoded_jwt = jwt.encode(
@@ -234,8 +237,12 @@ class UserLoginController(Resource):
                             # if user is logged-in, and configured experiments database previously:
                             # initialize experiment database and start execution scheduler if they are not done before
                             if experiments_db() is None:
-                                setup_experiment_database(str(user_info_without_id['db_configuration']['type']), str(
-                                    user_info_without_id['db_configuration']['host']), str(user_info_without_id['db_configuration']['port']))
+                                try:
+                                    setup_experiment_database(str(user_info_without_id['db_configuration']['type']), str(
+                                        user_info_without_id['db_configuration']['host']), str(user_info_without_id['db_configuration']['port']))
+                                except:
+                                    return {"message": "Experiments database configuration needs to be set before proceeding"}, 500
+
                             if get_execution_scheduler_timer() is None:
                                 initialize_execution_scheduler(10)
                         else:
@@ -246,8 +253,12 @@ class UserLoginController(Resource):
                             user_info_without_id['db_configuration']['port'] = 9200
 
                             if experiments_db() is None:
-                                setup_experiment_database(str(user_info_without_id['db_configuration']['type']), str(
-                                user_info_without_id['db_configuration']['host']), str(user_info_without_id['db_configuration']['port']))
+                                try:
+                                    setup_experiment_database(str(user_info_without_id['db_configuration']['type']), str(
+                                        user_info_without_id['db_configuration']['host']), str(user_info_without_id['db_configuration']['port']))
+                                except:
+                                    return {"message": "Experiments database configuration needs to be set before proceeding"}, 500
+
                             if get_execution_scheduler_timer() is None:
                                 initialize_execution_scheduler(10)
                         # return the usual jwt token
@@ -257,30 +268,31 @@ class UserLoginController(Resource):
                 else:
                     return {"message": "User does not exist. Please register first."}, 404
                 
-                # try with elasticsearch for backward compatibility
-                user_info_without_id = single_user[1]
-                #print(user_info_without_id)
-                if len(user_info_without_id) is not 0:
-                    # assuming that only one user is returned from DB
-                    user_info_without_id = user_info_without_id[0]
-                    if check_password_hash(user_info_without_id['password'], password):
-                        del user_info_without_id['password']
-                        encoded_jwt = jwt.encode({"user": user_info_without_id}, key, algorithm="HS256")
+                # try with elasticsearch for backward compatibility TODO?
+                # user_info_without_id = single_user[1]
+                # #print(user_info_without_id)
+                # if len(user_info_without_id) is not 0:
+                #     # assuming that only one user is returned from DB
+                #     user_info_without_id = user_info_without_id[0]
+                #     if check_password_hash(user_info_without_id['password'], password):
+                #         del user_info_without_id['password']
+                #         encoded_jwt = jwt.encode({"user": user_info_without_id}, key, algorithm="HS256")
+                #
+                #         if 'host' in user_info_without_id['db_configuration'] and 'port' in user_info_without_id['db_configuration'] and 'type' in user_info_without_id['db_configuration']:
+                #             # if user is logged-in, and configured experiments database previously:
+                #             # initialize experiment database and start execution scheduler if they are not done before
+                #             if experiments_db() is None:
+                #                 setup_experiment_database(str(user_info_without_id['db_configuration']['type']), str(user_info_without_id['db_configuration']['host']), str(user_info_without_id['db_configuration']['port']))
+                #             if get_execution_scheduler_timer() is None:
+                #                 initialize_execution_scheduler(10)
+                #
+                #         # return the usual jwt token
+                #         return {"token": encoded_jwt}, 200
+                #     else:
+                #         return {"message": "Provided credentials are not correct"}, 403
+                # else:
+                #     return {"message": "User does not exist. Please register first."}, 404
 
-                        if 'host' in user_info_without_id['db_configuration'] and 'port' in user_info_without_id['db_configuration'] and 'type' in user_info_without_id['db_configuration']:
-                            # if user is logged-in, and configured experiments database previously:
-                            # initialize experiment database and start execution scheduler if they are not done before
-                            if experiments_db() is None:
-                                setup_experiment_database(str(user_info_without_id['db_configuration']['type']), str(user_info_without_id['db_configuration']['host']), str(user_info_without_id['db_configuration']['port']))
-                            if get_execution_scheduler_timer() is None:
-                                initialize_execution_scheduler(10)
-
-                        # return the usual jwt token
-                        return {"token": encoded_jwt}, 200
-                    else:
-                        return {"message": "Provided credentials are not correct"}, 403
-                else:
-                    return {"message": "User does not exist. Please register first."}, 404
             else:
                 return {"message": "Invalid information"}, 404
 

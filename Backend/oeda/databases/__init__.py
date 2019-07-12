@@ -66,25 +66,28 @@ def setup_experiment_database(db_type, host, port, for_tests=False):
     current_directory = os.path.dirname(__file__)
     parent_directory = os.path.split(current_directory)[0]
     file_path = os.path.join(parent_directory, 'databases', 'experiment_db_config.json')
-    with open(file_path) as json_data_file:
-        try:
-            config_data = load(json_data_file)
-            if for_tests:
-                # change the index
-                config_data["index"]["name"] += str("_test")
-                TestDatabase.db = create_db_instance_for_experiments(db_type, host, port, config_data)
-            else:
-                ExperimentDatabase.db = create_db_instance_for_experiments(db_type, host, port, config_data)
-        except ValueError as ve:
-            print(ve)
-            error("> You need to specify the user database configuration in databases/experiment_db_config.json")
-            exit(0)
-        except KeyError:
-            error("> You need to specify 'db_type', 'host', 'port' values in databases/experiment_db_config.json properly")
-            exit(0)
-        except ConnectionError as conn_err:
-            raise conn_err
-
+    try:
+        with open(file_path) as json_data_file:
+            try:
+                config_data = load(json_data_file)
+                if for_tests:
+                    # change the index
+                    config_data["index"]["name"] += str("_test")
+                    TestDatabase.db = create_db_instance_for_experiments(db_type, host, port, config_data)
+                else:
+                    ExperimentDatabase.db = create_db_instance_for_experiments(db_type, host, port, config_data)
+            except ValueError as ve:
+                print(ve)
+                error("> You need to specify the user database configuration in databases/experiment_db_config.json")
+                exit(0)
+            except KeyError:
+                error("> You need to specify 'db_type', 'host', 'port' values in databases/experiment_db_config.json properly")
+                exit(0)
+            except ConnectionError as conn_err:
+                raise conn_err
+    except Exception as exc:
+        error("> You need to specify a 'experiment_db_config.json' file in the databases folder. You can copy the template in that folder!")
+        raise exc
 
 def user_db():
     if not UserDatabase.db:
