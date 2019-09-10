@@ -53,14 +53,18 @@
             <tbody class="bigTable">
             <tr *ngFor="let item of mf.data">
               <td style="padding-right: 0">
-                <a class="btn btn-xs btn-orange" type="button" *ngIf="item.status == 'SUCCESS'"
-                   routerLink="/control/experiments/show/{{item.id}}/success" data-toggle="tooltip" title="Click to see results"><i class="fa fa-search"></i> Results
+                <a class="btn btn-xs btn-primary" type="button" *ngIf="item.status == 'SUCCESS'"
+                   routerLink="/control/experiments/show/{{item.id}}/success" data-toggle="tooltip" title="Click to see results"><i class="fa fa-search"></i> Details
                 </a>
-                <a class="btn btn-xs btn-orange" type="button" *ngIf="item.status == 'INTERRUPTED'"
-                   routerLink="/control/experiments/show/{{item.id}}/interrupted" data-toggle="tooltip" title="Click to see results"><i class="fa fa-search"></i> Results
+                <a class="btn btn-xs btn-primary" type="button" *ngIf="item.status == 'INTERRUPTED'"
+                   routerLink="/control/experiments/show/{{item.id}}/interrupted" data-toggle="tooltip" title="Click to see results"><i class="fa fa-search"></i> Details
                 </a>
-                <a class="btn btn-xs btn-orange" type="button" *ngIf="item.status !== 'INTERRUPTED' && item.status !== 'SUCCESS'"
-                   routerLink="/control/experiments/show/{{item.id}}/running" data-toggle="tooltip" title="Click to see results in real-time"><i class="fa fa-search"></i> Results
+                <a class="btn btn-xs btn-primary" type="button" *ngIf="item.status !== 'INTERRUPTED' && item.status !== 'SUCCESS'"
+                   routerLink="/control/experiments/show/{{item.id}}/running" data-toggle="tooltip" title="Click to see results in real-time"><i class="fa fa-search"></i> Details
+                </a>
+                <a class="btn btn-xs btn-orange" type="button" *ngIf="item.status != 'RUNNING'"
+                   data-target="#deleteExperimentModal" (click)="modalExperimentDeletion(item.id)"
+                   data-toggle="modal" title="Delete this experiment"><i class="fa fa-trash-o"></i> Delete
                 </a>
               </td>
               <td>
@@ -93,5 +97,27 @@
       </div>
     </div>
   </div>
+
+  <!-- Modal for deleting experiments-->
+  <div class="modal fade bd-example-modal-lg" id="deleteExperimentModal" tabindex="-1" role="dialog" aria-labelledby="modalTitle" aria-hidden="true">
+    <div class="col-md-12">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h4 class="modal-title" id="modalTitle">Deleting Experiment</h4>
+          </div>
+          <div class="modal-body">
+            Please confirm that you want to delete experiment <span style="color:red;">{{experimentToBeDeletedName}}</span>.
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+            <button type="button" class="btn btn-orange" data-dismiss="modal" (click)="deleteExperiment()">Delete</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
   <debug-element [element]="experiments"></debug-element>
 </div>

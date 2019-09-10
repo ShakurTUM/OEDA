@@ -205,7 +205,7 @@ export class EntityService {
       "dataProviders": [],
       "primaryDataProvider": {
         "type": "",
-        "ignore_first_n_samples": null
+        "ignore_first_n_samples": 0
       },
       "secondaryDataProviders": [],
       "changeProvider": {

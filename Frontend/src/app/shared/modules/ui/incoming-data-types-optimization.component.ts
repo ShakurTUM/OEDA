@@ -39,7 +39,7 @@ import {isNullOrUndefined} from "util";
                   <input type="checkbox" class="form-check-input"
                          (change)="data_type_checkbox_clicked(i)"
                          data-toggle="tooltip"
-                         title="Select one incoming data type to be optimized. You cannot aggregate data coming from primary & secondary data providers at the same time"
+                         title="Select one output parameter to be optimized. You cannot aggregate data coming from primary & secondary data providers at the same time"
                          [checked]="dataType.is_considered == true">
                 </td>
 

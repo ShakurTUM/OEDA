@@ -118,7 +118,7 @@ export class CreateExperimentsComponent implements OnInit {
     this.selectedTargetSystem = this.availableTargetSystems.find(item => item.name === targetSystemName);
     if (this.selectedTargetSystem !== undefined) {
       if (this.selectedTargetSystem.changeableVariables.length === 0) {
-        this.notify.error("Error", "Target does not contain a changeable variable.");
+        this.notify.error("Error", "Target does not contain input parameters.");
         return;
       }
 
@@ -268,7 +268,7 @@ export class CreateExperimentsComponent implements OnInit {
         let knob = knobArr[idx];
         let originalKnob = this.targetSystem.defaultVariables.find(x => x.name == knob.name);
         if (knob.min < originalKnob.min || knob.max > originalKnob.max || knob.max <= knob.min || knob.min >= knob.max) {
-          this.errorButtonLabel = "Value(s) of changeable variables should be within the range of original ones";
+          this.errorButtonLabel = "Value(s) of input parameters should be within the range of original ones";
           return true;
         }
 
@@ -282,7 +282,7 @@ export class CreateExperimentsComponent implements OnInit {
       }
     }
     if (nrOfSelectedVariables == 0) {
-      this.errorButtonLabel = "Provide at least one changeable variable";
+      this.errorButtonLabel = "Provide at least one input parameter";
       return true;
     }
 
@@ -363,7 +363,7 @@ export class CreateExperimentsComponent implements OnInit {
                 else {
                   // now check intervals
                   if (Number(factor) < Number(chVar["min"]) || Number(factor) > Number(chVar["max"])) {
-                    this.errorButtonLabelAnova = "Provide values within min & max values of changeable variable(s)";
+                    this.errorButtonLabelAnova = "Provide values within min & max values of input parameter(s)";
                     return true;
                   }
                 }

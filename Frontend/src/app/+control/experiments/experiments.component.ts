@@ -38,6 +38,8 @@ export class ExperimentsComponent {
   }
 
   experiments = [];
+  experimentToBeDeleted = null;
+  experimentToBeDeletedName : string;
 
   fetch_experiments(): void {
     const ctrl = this;
@@ -78,5 +80,15 @@ export class ExperimentsComponent {
 
   navigateToConfigurationPage() {
     this.router.navigate(["control/configuration"]);
+  }
+
+  modalExperimentDeletion(experimentId){
+    this.experimentToBeDeleted = this.experiments.find(e => e.id == experimentId);
+    this.experimentToBeDeletedName = this.experimentToBeDeleted.name;
+  }
+
+  deleteExperiment(){
+    console.log("need to delete experiment: " , this.experimentToBeDeleted);
+    return;
   }
 }

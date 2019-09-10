@@ -1,10 +1,12 @@
 import {Component, OnInit} from '@angular/core';
+import {NotificationsService} from "angular2-notifications";
 import {LayoutService} from "../../shared/modules/helper/layout.service";
 import {TempStorageService} from "../../shared/modules/helper/temp-storage-service";
 import {OEDAApiService} from "../../shared/modules/api/oeda-api.service";
 import {Router} from "@angular/router";
 import {UserService} from "../../shared/modules/auth/user.service";
 import {UtilService} from "../../shared/modules/util/util.service";
+import {isNullOrUndefined} from "util";
 
 
 @Component({
@@ -15,16 +17,22 @@ export class TargetsComponent implements OnInit {
   public is_db_configured: boolean;
 
   constructor(private layout: LayoutService,
+              private notify: NotificationsService,
               private temp_storage: TempStorageService,
               private api: OEDAApiService,
               private router: Router,
               private userService: UserService,
               private utilService: UtilService) {
     // redirect user to configuration page if it's not configured yet.
-    this.is_db_configured = userService.is_db_configured();
+              this.is_db_configured = userService.is_db_configured();
+              this.experimentsToBeDeleted = [];
   }
 
   targets = [];
+  experiments = [];
+  experimentsToBeDeleted = [];
+  tobeDeleted = null;
+  toBeDeletedName : string;
 
   ngOnInit(): void {
     this.layout.setHeader("Target System", "Experimental Remote Systems");
@@ -47,8 +55,48 @@ export class TargetsComponent implements OnInit {
     }
   }
 
+
+  fetch_experiments_to_be_deleted(targetId): void {
+    const ctrl = this;
+    this.experimentsToBeDeleted = [];
+    this.api.loadAllExperiments().subscribe(
+      (data) => {
+        if (!isNullOrUndefined(data)) {
+          this.experiments = data;
+
+          for (let i = 0; i < this.experiments.length; i++) {
+            if (this.experiments[i].targetSystemId === targetId) {
+              this.experimentsToBeDeleted.push(this.experiments[i]);
+            }
+          }
+
+        } else {
+          this.notify.error("Error", "Failed to retrieve experiments from DB");
+        }
+        console.log("deleting the target system removes experiments: ", this.experimentsToBeDeleted);
+      }
+    )
+  }
+
+
   navigateToConfigurationPage() {
     this.router.navigate(["control/configuration"]);
   }
 
+  modalTargetSystemDeletion(targetId){
+    this.tobeDeleted = this.targets.find(t => t.id == targetId);
+    this.toBeDeletedName = this.tobeDeleted.name;
+    this.fetch_experiments_to_be_deleted(targetId);
+    return;
+  }
+
+  cancelTargetSystemDeletion(){
+    this.experimentsToBeDeleted = [];
+  }
+
+  deleteTargetSystem(targetSystem){
+    console.log("deleting target system: ", targetSystem);
+    //this.fetch_experiments_to_be_deleted();
+
+  }
 }

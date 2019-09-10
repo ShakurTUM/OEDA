@@ -205,7 +205,7 @@ export class EditTargetsComponent implements OnInit {
 
     // check if names of user-added changeable variables are not same with the ones coming from configuration
     if (this.checkDuplicateInObject('name', this.target.changeableVariables)) {
-      return this.notify.error("", "Changeable variables contain duplicate elements");
+      return this.notify.error("", "Input parameters contain duplicate elements");
     }
     // check if names of user-added incoming data types are not same with the ones coming from configuration
     if (this.checkDuplicateInObject('name', this.target.incomingDataTypes)) {
@@ -228,10 +228,10 @@ export class EditTargetsComponent implements OnInit {
       let dataProvider = this.target.dataProviders[i];
       if (dataProvider["is_primary"] === true) {
         // now check if user provided a valid input for number of samples to ignore
-        if (!isNullOrUndefined(dataProvider["ignore_first_n_samples"])){
-          primary_exists = true;
-          this.target.primaryDataProvider = dataProvider;
-        }
+        //if (!isNullOrUndefined(dataProvider["ignore_first_n_samples"])){
+        primary_exists = true;
+        this.target.primaryDataProvider = dataProvider;
+        //}
       } else {
         this.target.secondaryDataProviders.push(dataProvider);
       }
@@ -252,9 +252,9 @@ export class EditTargetsComponent implements OnInit {
         ctrl.checkValidityOfTargetSystemDefinition();
         let primary_data_provider_exists = this.refreshDataProvidersAndCheckValidity();
         if (!primary_data_provider_exists) {
-          return ctrl.notify.error("", "Provide at least one primary data provider and number of samples to ignore");
+          return ctrl.notify.error("", "Provide at least one primary data provider!");
+          //return ctrl.notify.error("", "Provide at least one primary data provider and number of samples to ignore");
         }
-
         // and perform save operation
         ctrl.api.saveTarget(ctrl.target).subscribe(
           (new_target) => {
@@ -268,7 +268,7 @@ export class EditTargetsComponent implements OnInit {
         ctrl.checkValidityOfTargetSystemDefinition();
         let primary_exists = this.refreshDataProvidersAndCheckValidity();
         if (!primary_exists) {
-          return ctrl.notify.error("", "Provide at least one primary data provider and number of samples to ignore");
+          return ctrl.notify.error("", "Provide at least one primary data provider!");
         }
         // everything is OK, create new uuid for edit operation
         ctrl.target.id = UUID.UUID();
@@ -303,10 +303,12 @@ export class EditTargetsComponent implements OnInit {
       if (dataProvider.hasOwnProperty("is_primary")) {
         if (dataProvider["is_primary"]) {
           nr_of_selected_primary_data_providers += 1;
+          /*
           if (isNullOrUndefined(dataProvider["ignore_first_n_samples"])) {
             this.errorButtonLabel = "Provide sample size to ignore";
             return true;
           }
+          */
         }
         if (nr_of_selected_primary_data_providers > 1) {
           this.errorButtonLabel = "Only one primary data provider is allowed";
@@ -384,7 +386,7 @@ export class EditTargetsComponent implements OnInit {
       }
     }
 
-    // now check attributes of incoming data types
+    // now check attributes of output parameters
     for (let i = 0; i < this.target.incomingDataTypes.length; i++) {
       if (this.target.incomingDataTypes[i].name == null
           || this.target.incomingDataTypes[i].length === 0
@@ -392,12 +394,12 @@ export class EditTargetsComponent implements OnInit {
           || this.target.incomingDataTypes[i].description === 0
           || isNullOrUndefined(this.target.incomingDataTypes[i].scale)
           || isNullOrUndefined(this.target.incomingDataTypes[i].criteria)) {
-        this.errorButtonLabel = "Provide valid inputs for incoming data type(s)";
+        this.errorButtonLabel = "Provide valid inputs for output parameter(s)";
         return true;
       }
     }
 
-    // check for attributes of changeable variables
+    // check for attributes of input parameters
     for (let i = 0; i < this.target.changeableVariables.length; i++) {
       if (this.target.changeableVariables[i].scale !== 'Boolean') {
         if (this.target.changeableVariables[i].name == null
@@ -420,7 +422,7 @@ export class EditTargetsComponent implements OnInit {
           || isNullOrUndefined(this.target.changeableVariables[i].scale)
           || isNullOrUndefined(this.target.changeableVariables[i].default)
           || isNullOrUndefined(this.target.changeableVariables[i].value)) {
-          this.errorButtonLabel = "Provide valid inputs for changeable variable(s)";
+          this.errorButtonLabel = "Provide valid inputs for input parameter(s)!";
           return true;
         }
       }
@@ -430,7 +432,7 @@ export class EditTargetsComponent implements OnInit {
       if (this.target.changeableVariables[i]["disabled"] == false) {
         if(this.target.changeableVariables[i].default < this.target.changeableVariables[i].min
           || this.target.changeableVariables[i].default > this.target.changeableVariables[i].max) {
-          this.errorButtonLabel = "Provide valid inputs for your changeable variable(s)";
+          this.errorButtonLabel = "Provide valid inputs for your input parameter(s)";
           return true;
         }
       }
@@ -441,7 +443,7 @@ export class EditTargetsComponent implements OnInit {
         if (existingDefaultVariable) {
           if (changeableVariable["min"] < existingDefaultVariable["min"]
             || changeableVariable["max"] > existingDefaultVariable["max"]) {
-            this.errorButtonLabel = "Inputs for changeable variable(s) cannot exceed limits in target system configuration";
+            this.errorButtonLabel = "Inputs for input parameter(s) cannot exceed limits in target system configuration";
             return true;
           }
         }
@@ -454,12 +456,12 @@ export class EditTargetsComponent implements OnInit {
     }
 
     if (this.target.changeableVariables.length === 0) {
-      this.errorButtonLabel = "Provide at least one changeable variable";
+      this.errorButtonLabel = "Provide at least one input parameter";
       return true;
     }
 
     if (this.target.incomingDataTypes.length === 0) {
-      this.errorButtonLabel = "Provide at least one incoming data type";
+      this.errorButtonLabel = "Provide at least one output parameter";
       return true;
     }
 

@@ -15,7 +15,7 @@ import {isNullOrUndefined} from "util";
               </div>
 
               <div class="col-md-3">
-                <div class="title pull-left">Incoming Data Type</div>
+                <div class="title pull-left">Output Parameters</div>
               </div>
 
               <div class="col-md-3">
