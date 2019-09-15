@@ -3,9 +3,9 @@ import logging
 from flask import Flask
 from flask_restful import Api
 
-from oeda.controller.targets import TargetController, TargetsListController
+from oeda.controller.targets import TargetController, TargetsListController, TargetDeleteController
 from oeda.controller.configuration import ConfigController, MlrMBOConfigController
-from oeda.controller.experiments import ExperimentsListController, ExperimentController
+from oeda.controller.experiments import ExperimentsListController, ExperimentController, ExperimentDeleteController
 from oeda.controller.experiment_results import StageResultsWithExperimentIdController, AllStageResultsWithExperimentIdController
 from oeda.controller.running_experiment_results import RunningAllStageResultsWithExperimentIdController, OEDACallbackController
 from oeda.controller.stages import StageController
@@ -84,10 +84,12 @@ api.add_resource(UserGroupController, '/api/usergroup/<string:group_name>')
 
 api.add_resource(ExperimentsListController, '/api/experiments')
 api.add_resource(ExperimentController, '/api/experiments/<string:experiment_id>')
+api.add_resource(ExperimentDeleteController, '/api/experiments/delete/<string:experiment_id>')
 api.add_resource(AnalysisController, '/api/analysis/<string:experiment_id>/<string:step_no>/<string:analysis_name>')
 
 api.add_resource(TargetsListController, '/api/targets')
 api.add_resource(TargetController, '/api/targets/<string:target_id>')
+api.add_resource(TargetDeleteController, '/api/targets/delete/<string:target_id>')
 
 api.add_resource(StageResultsWithExperimentIdController, '/api/experiment_results/<string:experiment_id>/<string:step_no>/<string:stage_no>') # Is this used?
 api.add_resource(AllStageResultsWithExperimentIdController, '/api/experiment_results/<string:experiment_id>')

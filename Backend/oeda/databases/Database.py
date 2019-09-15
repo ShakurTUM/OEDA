@@ -16,6 +16,10 @@ class Database:
         """ returns the configuration of an OEDA target system """
         pass
 
+    def delete_target(self, target_system_data):
+        """ deletes a target system """
+        pass
+
     def get_targets(self):
         """ returns all the target systems """
         pass
@@ -26,6 +30,10 @@ class Database:
 
     def get_experiment(self, experiment_id):
         """ returns the configuration of an OEDA experiment """
+        pass
+
+    def delete_experiment(self, experiment_id):
+        """ deletes the experiment """
         pass
 
     def get_experiments(self):
@@ -48,12 +56,20 @@ class Database:
         """ updates stage tuple with provided field & values """
         pass
 
+    def delete_stage(self, stage_id):
+        """ deletes the stage given its id """
+        pass
+
     def get_stages(self, experiment_id, step_no):
         """ returns all stages of an OEDA experiment with provided id and step_no """
         pass
 
     def save_data_point(self, experiment_id, step_no, stage_no, data_point_count, secondary_data_provider_index, payload):
         """ saves data retrieved from data provider for the given stage """
+        pass
+
+    def delete_data_points(self, stage_id):
+        """ deletes all data_points with the given stage_id """
         pass
 
     def get_data_points(self, experiment_id, step_no, stage_no):

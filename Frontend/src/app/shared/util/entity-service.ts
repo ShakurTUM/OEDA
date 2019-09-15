@@ -187,6 +187,7 @@ export class EntityService {
   public create_experiment(execution_strategy): Experiment {
       return {
         "id": UUID.UUID(),
+        "user": "",
         "name": "",
         "description": "",
         "status": "",
@@ -202,10 +203,11 @@ export class EntityService {
   public create_target_system(): Target {
     return {
       "id": "",
+      "user": "",
       "dataProviders": [],
       "primaryDataProvider": {
         "type": "",
-        "ignore_first_n_samples": 0
+        "ignore_first_n_samples": null
       },
       "secondaryDataProviders": [],
       "changeProvider": {

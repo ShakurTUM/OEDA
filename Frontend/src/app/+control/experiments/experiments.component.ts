@@ -85,10 +85,22 @@ export class ExperimentsComponent {
   modalExperimentDeletion(experimentId){
     this.experimentToBeDeleted = this.experiments.find(e => e.id == experimentId);
     this.experimentToBeDeletedName = this.experimentToBeDeleted.name;
+    // console.log("deleting experiment: ", this.experimentToBeDeleted.id);
   }
 
-  deleteExperiment(){
-    console.log("need to delete experiment: " , this.experimentToBeDeleted);
-    return;
+  cancelExperimentDeletion(){
+    this.experimentToBeDeleted = null;
+  }
+
+  deleteExperiment(experiment){
+    console.log("deleting experiment: ", experiment.id);
+
+    this.api.deleteExperiment(experiment).subscribe(
+      (data) => {
+        console.log("experiment-" + data);
+        this.experiments = this.experiments.filter(e => e.id != experiment.id);
+        // this.router.navigate(["control/targets"]);
+      }
+    )
   }
 }

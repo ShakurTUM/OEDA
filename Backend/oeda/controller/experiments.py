@@ -66,3 +66,13 @@ class ExperimentsListController(Resource):
             new_experiments[i]["id"] = ids[i]
             i += 1
         return new_experiments
+
+class ExperimentDeleteController(Resource):
+
+    @staticmethod
+    def get(experiment_id):
+        experiment = db().delete_experiment(experiment_id)
+        try:
+            return experiment
+        except:
+            return {"error": "not found"}, 404

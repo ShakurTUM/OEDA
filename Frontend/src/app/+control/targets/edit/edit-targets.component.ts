@@ -8,6 +8,7 @@ import {NotificationsService} from "angular2-notifications/dist";
 import * as _ from "lodash.clonedeep";
 import * as lodash from "lodash";
 import {isNullOrUndefined} from "util";
+import {UserService} from "../../../shared/modules/auth/user.service";
 
 @Component({
   selector: 'edit-control-targets',
@@ -19,6 +20,7 @@ export class EditTargetsComponent implements OnInit {
   constructor(private layout: LayoutService,
               private temp_storage: TempStorageService,
               private api: OEDAApiService,
+              private userService: UserService,
               private router: Router, private route: ActivatedRoute,
               private notify: NotificationsService) {
   }
@@ -93,6 +95,7 @@ export class EditTargetsComponent implements OnInit {
   createTarget(): Target {
     return {
       "id": UUID.UUID(),
+      "user": "",
       "dataProviders": [],
       "primaryDataProvider": {},
       "secondaryDataProviders": [],
@@ -228,10 +231,11 @@ export class EditTargetsComponent implements OnInit {
       let dataProvider = this.target.dataProviders[i];
       if (dataProvider["is_primary"] === true) {
         // now check if user provided a valid input for number of samples to ignore
-        //if (!isNullOrUndefined(dataProvider["ignore_first_n_samples"])){
+        if (isNullOrUndefined(dataProvider["ignore_first_n_samples"])){
+          dataProvider["ignore_first_n_samples"] = 0; // TODO: deal with these samples in a less ugly way
+        }
         primary_exists = true;
         this.target.primaryDataProvider = dataProvider;
-        //}
       } else {
         this.target.secondaryDataProviders.push(dataProvider);
       }
@@ -244,6 +248,8 @@ export class EditTargetsComponent implements OnInit {
     if (!ctrl.hasErrors()) {
       this.target.defaultVariables = _(this.target.changeableVariables);
       ctrl.target.name = ctrl.target.name.trim();
+      ctrl.target.user = this.userService.getAuthToken()["value"].user.name;
+      console.log("user creating this experiment: ", ctrl.target.user);
       console.log(ctrl.target);
 
       // new ts will be created in first case
@@ -281,7 +287,9 @@ export class EditTargetsComponent implements OnInit {
           }
         );
       }
+      console.log("primary data provider: ", this.target.primaryDataProvider)
     }
+    console.log("primary data provider: ",this.target.primaryDataProvider);
   }
 
   hasErrors(): boolean {

@@ -11,7 +11,6 @@ from elasticsearch.helpers import scan
 from .Database import Database
 from oeda.log import *
 
-
 class ElasticSearchDb(Database):
     data_point_definition = None
     experiment_definition = None
@@ -98,6 +97,14 @@ class ElasticSearchDb(Database):
             error("ConnectionError while retrieving target. Check connection to elasticsearch.")
             raise err1
 
+    def delete_target(self, target_system_id):
+        try:
+            self.es.delete(index=self.target_system_index, id=target_system_id)
+            return "deleted"
+        except ConnectionError as err1:
+            error("ConnectionError while deleting target system. Check connection to elasticsearch.")
+            raise err1
+
     def get_targets(self):
         try:
             query = {
@@ -120,6 +127,7 @@ class ElasticSearchDb(Database):
         experiment_data["status"] = "OPEN"
         experiment_data["createdDate"] = datetime.now().isoformat(' ')
         experiment_id = experiment_data["id"]
+
         try:
             self.es.index(index=self.experiment_index, body=experiment_data, id=experiment_id)
         except ConnectionError as err1:
@@ -139,6 +147,21 @@ class ElasticSearchDb(Database):
         except TransportError as err2:
             error("TransportError while retrieving an experiment. Check type mappings in experiment_db_config.json.")
             raise err2
+
+    def delete_experiment(self, experiment_id):
+        steps_count = self.get_experiment(experiment_id)["numberOfSteps"]
+        for step in range(1, steps_count + 1):
+            stage_ids, stages = self.get_stages(experiment_id=experiment_id, step_no=step)
+            for stage_id in stage_ids:
+                debug("deleting stage: " + str(stage_id))
+                self.delete_data_points(stage_id=stage_id)
+                self.delete_stage(stage_id=stage_id)
+        try:
+            self.es.delete(index=self.experiment_index, id=experiment_id)
+            return "deleted"
+        except ConnectionError as err1:
+            error("ConnectionError while deleting experiment. Check connection to elasticsearch.")
+            raise err1
 
     def get_experiments(self):
         query = {
@@ -225,6 +248,16 @@ class ElasticSearchDb(Database):
             error("TransportError while updating stage result. Check type mappings in experiment_db_config.json.")
             raise err2
 
+    def delete_stage(self, stage_id):
+        try:
+            self.es.delete(index=self.stage_index, id=stage_id)
+        except ConnectionError as err1:
+            error("ConnectionError while updating stage result. Check connection to elasticsearch.")
+            raise err1
+        except TransportError as err2:
+            error("TransportError while updating stage result. Check type mappings in experiment_db_config.json.")
+            raise err2
+
     def get_stages(self, experiment_id, step_no):
         query = {
             "query": {
@@ -260,6 +293,16 @@ class ElasticSearchDb(Database):
         body["stage_id"] = stage_id
         try:
             self.es.index(index=self.data_point_index, body=body, id=data_point_id)
+        except ConnectionError as err1:
+            error("ConnectionError while saving data point. Check connection to elasticsearch.")
+            raise err1
+        except TransportError as err2:
+            error("TransportError while saving data point. Check type mappings in experiment_db_config.json.")
+            raise err2
+
+    def delete_data_points(self, stage_id):
+        try:
+            self.es.delete_by_query(index=self.data_point_index, body={"query": {"match": {'stage_id': stage_id}}})
         except ConnectionError as err1:
             error("ConnectionError while saving data point. Check connection to elasticsearch.")
             raise err1

@@ -43,11 +43,16 @@
                 <mfDefaultSorter by="createdDate">Created on</mfDefaultSorter>
               </th>
               <th>
+                <mfDefaultSorter by="user">Created by</mfDefaultSorter>
+              </th>
+              <!--
+              <th>
                 <mfDefaultSorter by="target">Primary Data Provider</mfDefaultSorter>
               </th>
               <th>
                 <mfDefaultSorter by="target">Change Provider</mfDefaultSorter>
               </th>
+              -->
 
             </tr>
             </thead>
@@ -57,7 +62,8 @@
                 <a class="btn btn-xs btn-primary" type="button"
                    routerLink="/control/targets/edit/{{item.id}}"><i class="fa fa-search"></i> Details
                 </a>
-                <a class="btn btn-xs btn-orange" type="button" data-target="#deleteTargetSystemModal"
+                <a class="btn btn-xs btn-orange" type="button" *ngIf="item.status != 'WORKING'"
+                   data-target="#deleteTargetSystemModal"
                    (click)="modalTargetSystemDeletion(item.id)"
                    data-toggle="modal" title="Delete this experiment"><i class="fa fa-trash-o"></i> Delete
                 </a>
@@ -70,8 +76,11 @@
               <td>{{item.name}}</td>
               <td>{{item.description}}</td>
               <td>{{item.createdDate}}</td>
+              <td>{{item.user}}</td>
+              <!--
               <td>{{item.primaryDataProvider?.type}}</td>
               <td>{{item.changeProvider?.type}}</td>
+              -->
 
             </tr>
             </tbody>

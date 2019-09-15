@@ -40,7 +40,10 @@
                 <mfDefaultSorter by="description">Description</mfDefaultSorter>
               </th>
               <th>
-                <mfDefaultSorter by="createdDate">Created</mfDefaultSorter>
+                <mfDefaultSorter by="createdDate">Created on</mfDefaultSorter>
+              </th>
+              <th>
+                <mfDefaultSorter by="user">Created by</mfDefaultSorter>
               </th>
               <th>
                 <mfDefaultSorter by="target">Target System</mfDefaultSorter>
@@ -62,7 +65,7 @@
                 <a class="btn btn-xs btn-primary" type="button" *ngIf="item.status !== 'INTERRUPTED' && item.status !== 'SUCCESS'"
                    routerLink="/control/experiments/show/{{item.id}}/running" data-toggle="tooltip" title="Click to see results in real-time"><i class="fa fa-search"></i> Details
                 </a>
-                <a class="btn btn-xs btn-orange" type="button" *ngIf="item.status != 'RUNNING'"
+                <a class="btn btn-xs btn-orange" type="button"  *ngIf="item.status != 'RUNNING'"
                    data-target="#deleteExperimentModal" (click)="modalExperimentDeletion(item.id)"
                    data-toggle="modal" title="Delete this experiment"><i class="fa fa-trash-o"></i> Delete
                 </a>
@@ -77,6 +80,7 @@
               <td>{{item.name}}</td>
               <td>{{item.description}}</td>
               <td>{{item.createdDate}}</td>
+              <td>{{item.user}}</td>
               <td><a routerLink="/control/targets/edit/{{item.targetSystemId}}" data-toggle="tooltip" title="Click to see target system definition">{{item.targetSystem?.name}}</a></td>
               <td>
                 <label *ngIf="item.targetSystem?.status == 'READY'" class="label label-success">READY</label>
@@ -110,8 +114,8 @@
             Please confirm that you want to delete experiment <span style="color:red;">{{experimentToBeDeletedName}}</span>.
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-            <button type="button" class="btn btn-orange" data-dismiss="modal" (click)="deleteExperiment()">Delete</button>
+            <button type="button" class="btn btn-secondary" data-dismiss="modal" (click)="cancelExperimentDeletion()">Cancel</button>
+            <button type="button" class="btn btn-orange" data-dismiss="modal" (click)="deleteExperiment(experimentToBeDeleted)">Delete</button>
           </div>
         </div>
       </div>

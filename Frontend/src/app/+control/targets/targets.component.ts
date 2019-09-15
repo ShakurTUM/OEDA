@@ -2,7 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import {NotificationsService} from "angular2-notifications";
 import {LayoutService} from "../../shared/modules/helper/layout.service";
 import {TempStorageService} from "../../shared/modules/helper/temp-storage-service";
-import {OEDAApiService} from "../../shared/modules/api/oeda-api.service";
+import {OEDAApiService, UserEntity} from "../../shared/modules/api/oeda-api.service";
 import {Router} from "@angular/router";
 import {UserService} from "../../shared/modules/auth/user.service";
 import {UtilService} from "../../shared/modules/util/util.service";
@@ -33,6 +33,7 @@ export class TargetsComponent implements OnInit {
   experimentsToBeDeleted = [];
   tobeDeleted = null;
   toBeDeletedName : string;
+
 
   ngOnInit(): void {
     this.layout.setHeader("Target System", "Experimental Remote Systems");
@@ -65,7 +66,7 @@ export class TargetsComponent implements OnInit {
           this.experiments = data;
 
           for (let i = 0; i < this.experiments.length; i++) {
-            if (this.experiments[i].targetSystemId === targetId) {
+            if (this.experiments[i].targetSystemId === targetId && this.experiments[i].status != 'RUNNING') {
               this.experimentsToBeDeleted.push(this.experiments[i]);
             }
           }
@@ -73,7 +74,6 @@ export class TargetsComponent implements OnInit {
         } else {
           this.notify.error("Error", "Failed to retrieve experiments from DB");
         }
-        console.log("deleting the target system removes experiments: ", this.experimentsToBeDeleted);
       }
     )
   }
@@ -84,6 +84,7 @@ export class TargetsComponent implements OnInit {
   }
 
   modalTargetSystemDeletion(targetId){
+
     this.tobeDeleted = this.targets.find(t => t.id == targetId);
     this.toBeDeletedName = this.tobeDeleted.name;
     this.fetch_experiments_to_be_deleted(targetId);
@@ -95,8 +96,27 @@ export class TargetsComponent implements OnInit {
   }
 
   deleteTargetSystem(targetSystem){
-    console.log("deleting target system: ", targetSystem);
-    //this.fetch_experiments_to_be_deleted();
+    console.log("deleting target system: ", targetSystem.id);
+    console.log("deleting the target system removes experiments: ", this.experimentsToBeDeleted);
 
+    // first delete the affected experiments
+    for (let i = 0; i < this.experimentsToBeDeleted.length; i++) {
+      this.api.deleteExperiment(this.experimentsToBeDeleted[i]).subscribe(
+        (data) => {
+          console.log("delete experiment-" + data + " because of target");
+          this.experiments = this.experiments.filter(e => e.id != this.experimentsToBeDeleted[i].id);
+      }
+      );
+    }
+
+    // then delete the target system
+    this.api.deleteTarget(targetSystem).subscribe(
+      (data) => {
+        console.log("target system-" + data);
+        this.targets = this.targets.filter(t => t.id != targetSystem.id);
+        // delete this.targets[tobeDeleted];
+        // this.router.navigate(["control/targets"]);
+      }
+    )
   }
 }
