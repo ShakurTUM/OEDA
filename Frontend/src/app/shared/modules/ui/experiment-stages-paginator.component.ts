@@ -11,7 +11,7 @@ import {isNullOrUndefined} from "util";
           <div class="row">
             <div class="col-md-4">
               <div class="card-title">
-                Incoming Data Type
+                Output Parameters
                 <select class="form-control" [(ngModel)]="incoming_data_type_name" (ngModelChange)="onIncomingDataTypeChange($event)">
                   <option *ngFor="let dataType of targetSystem.incomingDataTypes" value="{{dataType.name}}">
                     {{dataType.name}}

@@ -58,6 +58,10 @@ export class OEDAApiService extends RESTService {
     return this.doPUTPublicRequest("/experiments/" + experiment.id, experiment)
   }
 
+  public deleteExperiment(experiment: Experiment): Observable<Target> {
+    return this.doGETPublicRequest("/experiments/delete/" + experiment.id)
+  }
+
   public loadAllTargets(): Observable<Target[]> {
     return this.doGETPublicRequest("/targets")
   }
@@ -69,6 +73,10 @@ export class OEDAApiService extends RESTService {
   public saveTarget(target: Target): Observable<Target> {
     return this.doPOSTPublicRequest("/targets/" + target.id, target)
       .map((res: Response) => res.json())
+  }
+
+  public deleteTarget(target: Target): Observable<Target> {
+    return this.doGETPublicRequest("/targets/delete/" + target.id)
   }
 
   public updateTarget(target: Target): Observable<any> {
@@ -100,6 +108,7 @@ export class OEDAApiService extends RESTService {
 export interface Experiment {
   id: string,
   name: string,
+  user: string,
   description: string,
   status: string,
   targetSystemId: string,
@@ -127,6 +136,7 @@ export interface StepEntity {
 export interface Target {
   id: string,
   name: string,
+  user: string,
   status: string,
   description: string,
   dataProviders: any, // generic one

@@ -64,3 +64,13 @@ class TargetsListController(Resource):
             i += 1
         new_targets = sorted(new_targets, key=lambda x: x["name"])
         return new_targets
+
+class TargetDeleteController(Resource):
+
+    @staticmethod
+    def get(target_id):
+        target = db().delete_target(target_id)
+        try:
+            return target
+        except:
+            return {"error": "not found"}, 404

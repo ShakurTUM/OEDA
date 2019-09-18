@@ -125,7 +125,7 @@ export class ShowSuccessfulExperimentComponent implements OnInit {
             ctrl.histogram = ctrl.plotService.draw_histogram("histogram", processedData, ctrl.incoming_data_type["name"], "All Stages", ctrl.decimal_places);
             ctrl.is_enough_data_for_plots = true;
           } else {
-            ctrl.notify.error("Error", "Selected scale might not be appropriate for the selected incoming data type");
+            ctrl.notify.error("Error", "Selected scale might not be appropriate for the selected output parameter");
             return;
           }
         } catch (err) {
@@ -229,7 +229,7 @@ export class ShowSuccessfulExperimentComponent implements OnInit {
         this.notify.error(this.scale + " scale cannot be applied to " + this.incoming_data_type["name"]);
       }
     } else {
-      this.notify.error("Please select an incoming data type");
+      this.notify.error("Please select an output parameter");
     }
 
   }

@@ -2,13 +2,20 @@ import {OnInit, Component} from "@angular/core";
 import {NotificationsService} from "angular2-notifications";
 import {Router} from "@angular/router";
 import {LayoutService} from "../../../shared/modules/helper/layout.service";
-import {OEDAApiService, Experiment, Target, ExecutionStrategy} from "../../../shared/modules/api/oeda-api.service";
+import {
+  OEDAApiService,
+  Experiment,
+  Target,
+  ExecutionStrategy,
+  UserEntity
+} from "../../../shared/modules/api/oeda-api.service";
 import * as _ from "lodash.clonedeep";
 import {isNullOrUndefined} from "util";
 import {TempStorageService} from "../../../shared/modules/helper/temp-storage-service";
 import {EntityService} from "../../../shared/util/entity-service";
 import {hasOwnProperty} from "tslint/lib/utils";
 import {isNumeric} from "rxjs/util/isNumeric";
+import {UserService} from "../../../shared/modules/auth/user.service";
 
 @Component({
   selector: 'control-experiments',
@@ -19,6 +26,7 @@ export class CreateExperimentsComponent implements OnInit {
   originalExperiment: Experiment;
   targetSystem: Target;
   originalTargetSystem: Target;
+  user: UserEntity;
   availableTargetSystems: any;
   executionStrategy: any;
   variable: any;
@@ -37,7 +45,9 @@ export class CreateExperimentsComponent implements OnInit {
 
   constructor(private layout: LayoutService, private api: OEDAApiService,
               private router: Router, private notify: NotificationsService,
-              private temp_storage: TempStorageService, private entityService: EntityService) {
+              private temp_storage: TempStorageService,
+              private userService: UserService,
+              private entityService: EntityService) {
     this.availableTargetSystems = [];
 
     // create experiment, target system, and execution strategy
@@ -71,11 +81,15 @@ export class CreateExperimentsComponent implements OnInit {
   }
 
   public saveExperiment() {
+    this.user = this.userService.getAuthToken()["value"].user;
+    // console.log("current user: " + this.user.name);
+
     if (!this.hasErrors()) {
       // prepare other attributes
       this.experiment.executionStrategy.optimizer_iterations = Number(this.experiment.executionStrategy.optimizer_iterations);
       this.experiment.executionStrategy.sample_size = Number(this.experiment.executionStrategy.sample_size);
       this.experiment.analysis.sample_size = Number(this.experiment.analysis.sample_size);
+      this.experiment.user = this.user.name;
 
       // take the incoming data type labeled as "is_considered" to perform stage result calculation in backend
       for (let item of this.targetSystem.incomingDataTypes) {
@@ -127,7 +141,7 @@ export class CreateExperimentsComponent implements OnInit {
     this.selectedTargetSystem = this.availableTargetSystems.find(item => item.name === targetSystemName);
     if (this.selectedTargetSystem !== undefined) {
       if (this.selectedTargetSystem.changeableVariables.length === 0) {
-        this.notify.error("Error", "Target does not contain a changeable variable.");
+        this.notify.error("Error", "Target does not contain input parameters.");
         return;
       }
 
@@ -255,7 +269,7 @@ export class CreateExperimentsComponent implements OnInit {
         let knob = knobArr[idx];
         let originalKnob = this.targetSystem.defaultVariables.find(x => x.name == knob.name);
         if (knob.min < originalKnob.min || knob.max > originalKnob.max || knob.max <= knob.min || knob.min >= knob.max) {
-          this.errorButtonLabel = "Value(s) of changeable variables should be within the range of original ones";
+          this.errorButtonLabel = "Value(s) of input parameters should be within the range of original ones";
           return true;
         }
 
@@ -269,7 +283,7 @@ export class CreateExperimentsComponent implements OnInit {
       }
     }
     if (nrOfSelectedVariables == 0) {
-      this.errorButtonLabel = "Provide at least one changeable variable";
+      this.errorButtonLabel = "Provide at least one input parameter";
       return true;
     }
 
@@ -335,7 +349,7 @@ export class CreateExperimentsComponent implements OnInit {
                 else {
                   // now check intervals
                   if (Number(factor) < Number(chVar["min"]) || Number(factor) > Number(chVar["max"])) {
-                    this.errorButtonLabelAnova = "Provide values within min & max values of changeable variable(s)";
+                    this.errorButtonLabelAnova = "Provide values within min & max values of input parameter(s)";
                     return true;
                   }
                 }

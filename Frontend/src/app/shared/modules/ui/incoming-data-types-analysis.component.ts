@@ -11,7 +11,7 @@ import {EntityService} from "../../util/entity-service";
       <div class="panel panel-default chartJs">
         <div class="panel-heading">
           <div class="card-title">
-            <div class="title pull-left">Incoming Data Types for Analysis</div>
+            <div class="title pull-left">Output Parameters for Analysis</div>
           </div>
         </div>
         <div class="panel-body">
@@ -33,7 +33,7 @@ import {EntityService} from "../../util/entity-service";
                          (change)="data_type_checkbox_clicked(i)"
                          data-toggle="tooltip"
                          [checked]="dataType['is_considered'] == true"
-                         title="Select one incoming data type for analysis. You can only select one of these data types">
+                         title="Select one output parameter for analysis. You can only select one of these data types">
                 </td>
               </tr>
               </tbody>

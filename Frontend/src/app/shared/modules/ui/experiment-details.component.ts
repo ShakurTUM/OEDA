@@ -79,10 +79,10 @@ import {isNullOrUndefined} from "util";
                 <div class="sub-title">Serializer</div>
                 <span>{{targetSystem.primaryDataProvider.serializer}}</span>
               </div>
-              <div class="col-md-2">
+              <!-- <div class="col-md-2">
                 <div class="sub-title">Ignore First N Samples</div>
                 <span>{{targetSystem.primaryDataProvider.ignore_first_n_samples}}</span>
-              </div>
+              </div> -->
             </div>
 
             <div class="row" *ngIf="targetSystem.primaryDataProvider.type == 'kafka_consumer'">
@@ -102,10 +102,10 @@ import {isNullOrUndefined} from "util";
                 <div class="sub-title">Serializer</div>
                 <span>{{targetSystem.primaryDataProvider.serializer}}</span>
               </div>
-              <div class="col-md-2">
+              <!-- <div class="col-md-2">
                 <div class="sub-title">Ignore First N Samples</div>
                 <span>{{targetSystem.primaryDataProvider.ignore_first_n_samples}}</span>
-              </div>
+              </div> -->
             </div>
 
             <div class="row" *ngIf="targetSystem.primaryDataProvider.type == 'mqtt_listener'">
@@ -129,10 +129,11 @@ import {isNullOrUndefined} from "util";
                 <div class="sub-title">Serializer</div>
                 <span>{{targetSystem.primaryDataProvider.serializer}}</span>
               </div>
+                <!--
               <div class="col-md-2">
                 <div class="sub-title">Ignore First N Samples</div>
                 <span>{{targetSystem.primaryDataProvider.ignore_first_n_samples}}</span>
-              </div>
+              </div> --> 
             </div>
           </div>
         </div>
@@ -290,9 +291,9 @@ import {isNullOrUndefined} from "util";
                 <thead>
                 <th style="width: 5%">Type</th>
                 <th style="width: 5%">Sample Size per Stage</th>
-                <th style="width: 5%" *ngIf="experiment.executionStrategy.type == 'random' 
-                  || experiment.executionStrategy.type == 'mlr_mbo' 
-                  || experiment.executionStrategy.type == 'self_optimizer' 
+                <th style="width: 5%" *ngIf="experiment.executionStrategy.type == 'random'
+                  || experiment.executionStrategy.type == 'mlr_mbo'
+                  || experiment.executionStrategy.type == 'self_optimizer'
                   || experiment.executionStrategy.type == 'uncorrelated_self_optimizer'">
                   Optimizer Iterations
                 </th>
@@ -302,8 +303,8 @@ import {isNullOrUndefined} from "util";
                   <!--|| experiment.executionStrategy.type == 'uncorrelated_self_optimizer'">-->
                   <!--Optimizer Iterations in Design-->
                 <!--</th>-->
-                <th style="width: 5%" *ngIf="experiment.executionStrategy.type == 'mlr_mbo' 
-                  || experiment.executionStrategy.type == 'self_optimizer' 
+                <th style="width: 5%" *ngIf="experiment.executionStrategy.type == 'mlr_mbo'
+                  || experiment.executionStrategy.type == 'self_optimizer'
                   || experiment.executionStrategy.type == 'uncorrelated_self_optimizer'">Acquisition Method
                 </th>
                 </thead>
@@ -322,8 +323,8 @@ import {isNullOrUndefined} from "util";
                     <!--|| experiment.executionStrategy.type == 'uncorrelated_self_optimizer'">-->
                     <!--{{experiment.executionStrategy.optimizer_iterations_in_design}}-->
                   <!--</td>-->
-                  <td *ngIf="experiment.executionStrategy.type == 'mlr_mbo' 
-                    || experiment.executionStrategy.type == 'self_optimizer' 
+                  <td *ngIf="experiment.executionStrategy.type == 'mlr_mbo'
+                    || experiment.executionStrategy.type == 'self_optimizer'
                     || experiment.executionStrategy.type == 'uncorrelated_self_optimizer'">
                     {{experiment.executionStrategy.acquisition_method}}
                   </td>
@@ -332,9 +333,9 @@ import {isNullOrUndefined} from "util";
             </div>
           </div>
         </div>
-        
+
       </div>
-      
+
     </div>
 
     <!-- Incoming Data Types -->
@@ -342,7 +343,7 @@ import {isNullOrUndefined} from "util";
       <div class="panel panel-default chartJs">
         <div class="panel-heading">
           <div class="card-title">
-            <div class="title pull-left">Incoming Data Types</div>
+              <div class="title pull-left">Output Parameters</div>
           </div>
         </div>
         <div class="panel-body" style="padding-top: 20px">
@@ -374,10 +375,10 @@ import {isNullOrUndefined} from "util";
         </div>
       </div>
     </div>
-    
+
     <!-- ANOVA Properties -->
     <div class="col-md-12" [hidden]="is_collapsed" style="border-right: 3px groove #5cb85c; border-left: 3px groove #5cb85c">
-      
+
       <div class="panel panel-default chartJs">
         <div class="panel-heading">
           <div class="card-title">
@@ -386,7 +387,7 @@ import {isNullOrUndefined} from "util";
         </div>
 
         <div class="panel-body" style="padding-top: 20px">
-          
+
           <!--Factors-->
           <div class="table-responsive" style="padding-top: 20px">
             <table style="margin-top: 5px" class="table table-striped table-bordered table-hover">
@@ -454,13 +455,13 @@ import {isNullOrUndefined} from "util";
           </div>
         </div>
         <div class="panel-body" style="padding-top: 20px">
-    
+
           <!-- Alpha -->
           <labeled-input [disabled]="true" inputType="number" name="Significance level (alpha)" [model]="experiment.analysis" key="tTestAlpha" [colSize]="3" tooltipTitle='Alpha value that will be used as significance threshold for step #3'></labeled-input>
-    
+
           <!-- Cohen's coefficient -->
           <labeled-input [disabled]="true" inputType="number" name="Minimum effect size (Cohen's d coefficient)" [model]="experiment.analysis" key="tTestEffectSize" [colSize]="3" tooltipTitle='Alpha value that will be used as significance threshold for Bayesian Optimization Step'></labeled-input>
-    
+
           <!-- sample size for optimization -->
           <labeled-input [disabled]="true" inputType="number" name="Number of samples collected for default & best configurations" [model]="experiment.analysis" key="tTestSampleSize" [colSize]="3" [minNumber]="1" tooltipTitle='Number of samples to be collected for both default configuration of target system and best knobs of optimization process'></labeled-input>
         </div>
