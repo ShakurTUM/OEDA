@@ -4,12 +4,15 @@ from oeda.log import *
 from oeda.rtxlib.changeproviders import init_change_provider
 from oeda.rtxlib.dataproviders import init_data_providers
 from oeda.rtxlib.preprocessors import init_pre_processors, kill_pre_processors
-from oeda.rtxlib.executionstrategy.ThreePhaseStrategy import start_three_phase_analysis
+from oeda.rtxlib.executionstrategy.FactorialExperimentStrategy import start_factorial_experiment
+from oeda.rtxlib.executionstrategy.TtestStrategy import start_ttest_analysis
 
 def execute_analysis(wf):
     # start the right execution strategy
-    if wf.analysis["type"] == "3_phase":
-        start_three_phase_analysis(wf)
+    if wf.analysis["type"] == "factorial_experiment":
+        start_factorial_experiment(wf)
+    if wf.analysis["type"] == "t_test":
+        start_ttest_analysis(wf)
 
 def execute_workflow(wf):
     """ this is the main workflow for executing a given workflow """

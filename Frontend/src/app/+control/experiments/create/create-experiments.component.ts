@@ -33,6 +33,7 @@ export class CreateExperimentsComponent implements OnInit {
   defaultTTestSampleSize: number;
   maxNrOfImportantFactors: number;
   mlrMBOworking: boolean;
+  stages_count: any;
 
   constructor(private layout: LayoutService, private api: OEDAApiService,
               private router: Router, private notify: NotificationsService,
@@ -83,19 +84,27 @@ export class CreateExperimentsComponent implements OnInit {
         }
       }
 
-      let knobs = {};
-      for (let chVar of this.targetSystem.changeableVariables) {
-        if (chVar.is_selected == true) {
-          let knobArr = [];
-          let factors = chVar.factorValues.split(",");
-          for (let factor of factors) {
-            knobArr.push(Number(factor).toFixed(2));
+      if (this.experiment.analysis.type == "factorial_experiment") {
+        let knobs = {};
+        for (let chVar of this.targetSystem.changeableVariables) {
+          console.log(chVar)
+          if (chVar.is_selected == true) {
+            let knobArr = [];
+            let factors = chVar.factorValues.split(",");
+            for (let factor of factors) {
+              knobArr.push(Number(factor).toFixed(2));
+            }
+            knobs[chVar.name] = knobArr;
           }
-          knobs[chVar.name] = knobArr;
         }
+        console.log(knobs)
+        this.experiment.changeableVariables = knobs;
+        this.experiment.executionStrategy.knobs = knobs; // also set executionStrategy knobs here
+      } else if (this.experiment.analysis.type == "t_test") {
+        this.experiment.executionStrategy.knobs = this.experiment.changeableVariables;
       }
-      this.experiment.changeableVariables = knobs;
-      this.experiment.executionStrategy.knobs = knobs; // also set executionStrategy knobs here
+
+
       this.api.saveExperiment(this.experiment).subscribe(
         (success) => {
           this.notify.success("Success", "Experiment saved");
@@ -143,7 +152,7 @@ export class CreateExperimentsComponent implements OnInit {
       this.experiment.targetSystemId = this.targetSystem.id;
 
       // set default values
-      this.experiment.analysis.type = "3_phase";
+      this.experiment.analysis.type = "";
       this.experiment.analysis.sample_size = 500; // same with the one in entityService's ExecutionStrategy.sample_size
       this.experiment.analysis.n = this.targetSystem.changeableVariables.length; // set number of factor's default value
       // this.experiment.analysis.nrOfImportantFactors = Math.round(Number(this.experiment.analysis.n / 3));
@@ -166,28 +175,6 @@ export class CreateExperimentsComponent implements OnInit {
     } else {
       this.notify.error("Error", "Cannot fetch selected target system, please try again");
       return;
-    }
-  }
-
-  // User can select execution strategy while creating an experiment
-  public executionStrategyModelChanged(execution_strategy_key) {
-    this.experiment.executionStrategy.type = execution_strategy_key;
-    if (execution_strategy_key === 'mlr_mbo') {
-      // check if mlrMBO host & port is alive
-      this.api.getMlrMBOConfig().subscribe(
-        (data) => {
-          if (!isNullOrUndefined(data)) {
-            this.acquisitionMethodChanged("ei");
-            this.notify.success("Success", data["message"]);
-            this.mlrMBOworking = true;
-          } else {
-            this.mlrMBOworking = false;
-            this.notify.error("Error", "mlrMBO-API is not working");
-          }
-        }
-      );
-    } else if (execution_strategy_key === 'self_optimizer') {
-      this.acquisitionMethodChanged("gp_hedge");
     }
   }
 
@@ -286,21 +273,6 @@ export class CreateExperimentsComponent implements OnInit {
       return true;
     }
 
-    // if there are errors in respective stages, propagate them to upper part of UI
-    if (this.hasErrorsAnova()) {
-      this.errorButtonLabel = this.errorButtonLabelAnova;
-      return true;
-    }
-
-    if (this.hasErrorsOptimization()) {
-      this.errorButtonLabel = this.errorButtonLabelOptimization;
-      return true;
-    }
-
-    if (this.hasErrorsTtest()) {
-      this.errorButtonLabel = this.errorButtonLabelTtest;
-      return true;
-    }
     return false;
   }
 
@@ -453,4 +425,179 @@ export class CreateExperimentsComponent implements OnInit {
   public hasChanges(): boolean {
     return JSON.stringify(this.experiment) !== JSON.stringify(this.originalExperiment);
   }
+
+  // ****************************
+  // CHANGES FROM ILIAS
+  // ****************************
+
+  // User can select analysis type while creating an experiment
+  experimentTypeChanged(key) {
+    this.experiment.analysis.type = key;
+    // refresh previously-created tuples
+    this.experiment.executionStrategy = this.entityService.create_execution_strategy();
+    this.stages_count = null;
+    this.experiment.changeableVariables = [];
+    this.experiment.analysis.method = null;
+    this.experiment.analysis.data_type = null;
+    this.experiment.analysis.alpha = null;
+
+    // also refresh targetSystem variables if user has selected some of them
+    this.targetSystem.changeableVariables = _(this.originalTargetSystem.changeableVariables);
+    this.targetSystem.incomingDataTypes = _(this.originalTargetSystem.incomingDataTypes);
+
+    // set executionStrategy type
+    if (key == 't_test') {
+      this.experiment.executionStrategy.type = "sequential"; // TODO: this might be removed depending on backend logic
+    }
+    else if (key == 'factorial_experiment') {
+      this.experiment.executionStrategy.type = "step_explorer";  // TODO: this might be removed depending on backend logic
+      this.experiment.analysis.n = this.targetSystem.changeableVariables.length; // set default value of factors (n)
+    }
+
+  }
+
+  public is_changeable_variable_selected(i): boolean {
+    // checks if at least one variable is selected for proper visualization of tables
+    if (isNullOrUndefined(i)) {
+      for (let changeableVariable of this.targetSystem.changeableVariables) {
+        if (changeableVariable["is_selected"] == true) {
+          return true;
+        }
+      }
+    } else {
+      // just checks if variable in given index is selected or not
+      let variable = this.targetSystem.changeableVariables[i];
+      return variable.is_selected;
+    }
+  }
+
+  addChangeableVariableTtest(variable) {
+    const ctrl = this;
+    let knobArr = [];
+      if (isNullOrUndefined(variable.target)) {
+        ctrl.notify.error("Error", "Provide target value for changeable variable(s)");
+        return;
+      } else {
+        // check number of already-added variables for different analysis options
+        if (ctrl.experiment.changeableVariables.length == 2) {
+          ctrl.notify.error("Error", "2 factors have already been specified for T-test");
+          return;
+        }
+        // ch. var is empty or there's one variable. check boundaries
+        if (!isNullOrUndefined(variable.target) && variable.target <= variable.max && variable.target >= variable.min) {
+          // ch. var is empty, just push
+          knobArr.push(_(variable));
+          ctrl.experiment.changeableVariables.push(knobArr);
+          return;
+        } else {
+          ctrl.notify.error("Error", "Provide valid value(s) for variable");
+          return;
+        }
+      }
+  }
+
+  // assuming that user has provided different configurations for variables and wants them to use for the selected analysis test
+  addVariablesFor2FactorAndSeqTest() {
+    let number_of_desired_variables: number;
+    if (this.experiment.analysis.type == 't_test') {
+      number_of_desired_variables = 2;
+    }
+
+    if (this.experiment.changeableVariables.length >= number_of_desired_variables) {
+      this.notify.error("Error", "You can't exceed " + number_of_desired_variables + " variable(s) for this test");
+      return;
+    }
+
+    // check boundaries of selected variables
+    for (let j = 0; j < this.targetSystem.changeableVariables.length; j++) {
+      let variable = this.targetSystem.changeableVariables[j];
+      if (variable.is_selected) {
+        if (isNullOrUndefined(variable.target)) {
+          this.notify.error("Error", "Provide valid values for variable(s)");
+          return;
+        } else {
+          if (variable.target < variable.min || variable.target > variable.max) {
+            this.notify.error("Error", "Provide valid values for variable(s)");
+            return;
+          }
+          // everything is ok for selected variables
+        }
+      }
+    }
+
+    // everything is ok, push to experiment.changeableVariables array
+    let knobArr = [];
+    for (let variable of this.targetSystem.changeableVariables) {
+      if (variable["is_selected"] == true) {
+        if (!isNullOrUndefined(variable.target) ) {
+          // push an array of k-v pairs instead of pushing variables directly
+          let knob: any = {};
+          knob.name = variable.name;
+          knob.min = variable.min;
+          knob.max = variable.max;
+          knob.default = variable.default;
+          knob.target = variable.target;
+          knobArr.push(knob);
+        } else {
+          this.notify.error("Error", "Please specify valid values for the selected changeable variables");
+          return;
+        }
+      }
+    }
+    // do not push empty k-v pair
+    if (knobArr.length == 0) {
+      this.notify.error("Error", "Please specify valid values for the selected changeable variables");
+    } else {
+      this.experiment.changeableVariables.push(knobArr);
+    }
+
+  }
+
+  // checks if user has selected proper number of variables for analysis tests
+  // and checks if user selected at least one variable to be added to experiment.changeableVariables
+  public hasErrors2FactorAndSequential() {
+    let nr = 0;
+
+    for (let chVar of this.targetSystem.changeableVariables) {
+      if (chVar["is_selected"] == true && isNullOrUndefined(chVar["target"])) {
+        this.errorButtonLabelTtest = "Provide target value(s)";
+        return true;
+      }
+
+      // check boundaries
+      if (chVar["is_selected"] == true && (chVar.target < chVar.min || chVar.target > chVar.max)) {
+        this.errorButtonLabelTtest = "Provide valid value(s)";
+        return true;
+      }
+
+      if (chVar["is_selected"] == true && !isNullOrUndefined(chVar["target"]))
+        nr += 1;
+    }
+    if (nr == 0) {
+      this.errorButtonLabelTtest = "Select and provide value(s) for at least one variable";
+      return true;
+    }
+    return false;
+  }
+
+  removeAllVariables() {
+    this.experiment.changeableVariables.splice(0);
+  }
+
+  removeChangeableVariable(index: number) {
+    this.experiment.changeableVariables.splice(index, 1);
+  }
+
+  // simple proxy
+  public get_keys(obj) {
+    return this.entityService.get_keys(obj);
+  }
+
+  // if one of the parameters in executionStrategy is not valid, sets stages_count to null, so that it will get hidden
+  strategyParametesChanged(value) {
+    if (isNullOrUndefined(value)) {
+      this.stages_count = null;
+    }
+  }
+
 }
